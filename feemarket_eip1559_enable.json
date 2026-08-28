@@ -1,0 +1,22 @@
+{
+  "messages": [
+    {
+      "@type": "/cosmos.evm.feemarket.v1.MsgUpdateParams",
+      "authority": "roon1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3z0fyey",
+      "params": {
+        "no_base_fee": false,
+        "base_fee_change_denominator": 8,
+        "elasticity_multiplier": 2,
+        "enable_height": "0",
+        "base_fee": "1000000000",
+        "min_gas_price": "50000000000",
+        "min_gas_multiplier": "0.5"
+      }
+    }
+  ],
+  "title": "Enable EIP-1559 Base Fee",
+  "summary": "Enable base fee (NoBaseFee=false), set MinGasPrice=50 gwei, EnableHeight=0",
+  "metadata": "",
+  "deposit": "10000000aroon",
+  "expedited": false
+}

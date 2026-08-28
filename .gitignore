@@ -1,0 +1,44 @@
+# OS
+.DS_Store
+*.swp
+*.swo
+*.swl
+*.swm
+*.swn
+*.pyc
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+.dccache
+
+# Testing
+coverage.txt
+yarn.lock
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.code-workspace
+
+# Node.js
+**/node_modules
+
+# OpenZeppelin contracts
+contracts/@openzeppelin/*
+
+# Build files
+evmd/build/
+
+build/
+
+tests/systemtests/binaries
+tests/systemtests/testnet
+.testnets
+
+# Chain dev artifacts (local_node.sh)
+mnemonics.yaml
+val_mnemonic.txt
+.evmd/

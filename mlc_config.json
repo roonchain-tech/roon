@@ -1,0 +1,22 @@
+{
+  "retryOn429": true,
+  "retryCount": 3,
+  "fallbackRetryDelay": "20s",
+  "ignorePatterns": [
+    {
+      "pattern": "^https://twitter.com/.*"
+    },
+    {
+      "pattern": "^http://localhost.*"
+    },
+    {
+      "pattern": "^https://localhost.*"
+    },
+    {
+      "pattern": "^http://127\\.0\\.0\\.1.*"
+    },
+    {
+      "pattern": "^https://127\\.0\\.0\\.1.*"
+    }
+  ]
+}

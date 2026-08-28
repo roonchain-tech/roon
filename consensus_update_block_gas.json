@@ -1,0 +1,17 @@
+{
+  "messages": [
+    {
+      "@type": "/cosmos.consensus.v1.MsgUpdateParams",
+      "authority": "roon10d07y265gmmuvt4z0w9aw880jnsr700jsg2gr7",
+      "block": { "max_gas": "80000000" },
+      "evidence": {},
+      "validator": {},
+      "abci": {}
+    }
+  ],
+  "title": "Increase Block Gas Limit to 80,000,000",
+  "summary": "Raise consensus block.max_gas to 80,000,000 to support larger transactions",
+  "metadata": "",
+  "deposit": "50000000aroon",
+  "expedited": true
+}
