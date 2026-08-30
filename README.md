@@ -1,9 +1,8 @@
 # Roon Chain
 
-Roon is a sovereign Proof-of-Stake blockchain with built-in EVM compatibility.
-It combines a native layer (CometBFT consensus, IBC, staking) with a fully
-featured Ethereum VM layer: Solidity smart contracts, Ethereum JSON-RPC, and
-native support for EVM wallets such as MetaMask and Rabby.
+RoonChain is a high-performance Layer 1 blockchain purpose-built for Real-World
+Asset tokenization, enabling seamless on-chain settlement and cross-domain
+collaboration.
 
 ## Chain Information
 
