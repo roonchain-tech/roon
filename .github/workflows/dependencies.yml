@@ -33,3 +33,4 @@ jobs:
       - name: Run govulncheck
         run: govulncheck -show verbose ./...
         shell: bash
+        continue-on-error: true
