@@ -448,12 +448,15 @@ func (k Keeper) EstimateGasInternal(c context.Context, req *types.EthCallRequest
 	if failed {
 		// Preserve Cosmos error semantics when the cap is reached
 		if hi == gasCap {
-            if result != nil && result.VmError != vm.ErrOutOfGas.Error() {
-                if result.VmError == vm.ErrExecutionReverted.Error() {
-                    return &types.EstimateGasResponse{Gas: ethparams.TxGas}, nil
-                }
-                return nil, errors.New(result.VmError)
-            }
+			if result != nil && result.VmError != vm.ErrOutOfGas.Error() {
+				if result.VmError == vm.ErrExecutionReverted.Error() {
+					return &types.EstimateGasResponse{
+						Ret:     result.Ret,
+						VmError: result.VmError,
+					}, nil
+				}
+				return nil, errors.New(result.VmError)
+			}
 			return nil, fmt.Errorf("gas required exceeds allowance (%d)", gasCap)
 		}
 		// If no larger allowance is available, fail fast
