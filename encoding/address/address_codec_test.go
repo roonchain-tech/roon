@@ -153,7 +153,8 @@ func TestBytesToString(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := cdc.BytesToString(tc.input())
+			bz := tc.input()
+					got, err := cdc.BytesToString(bz)
 			if tc.expErr == nil {
 				require.NoError(t, err)
 				require.Equal(t, tc.expRes, got)

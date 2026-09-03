@@ -391,12 +391,19 @@ test-system: build-v05 build
 	cd tests/systemtests/Counter && forge build
 	$(MAKE) -C tests/systemtests test
 
+# Build the legacy v0.5 binary from upstream cosmos/evm source.
+# The roon repo does not carry upstream git history/tags, so we clone
+# the tagged upstream release into a scratch dir instead of checking out.
+UPSTREAM_REPO ?= https://github.com/cosmos/evm
+LEGACY_TAG ?= v0.5.1
+LEGACY_DIR ?= $(CURDIR)/build/legacy-$(LEGACY_TAG)
+
 build-v05:
 	mkdir -p ./tests/systemtests/binaries/v0.5
-	git checkout v0.5.0
-	make build
-	cp $(BUILDDIR)/evmd ./tests/systemtests/binaries/v0.5
-	git checkout -
+	rm -rf $(LEGACY_DIR)
+	git clone --depth 1 --branch $(LEGACY_TAG) $(UPSTREAM_REPO) $(LEGACY_DIR)
+	$(MAKE) -C $(LEGACY_DIR) build
+	cp $(LEGACY_DIR)/build/evmd ./tests/systemtests/binaries/v0.5/roon
 
 mocks:
 	@echo "--> generating mocks"

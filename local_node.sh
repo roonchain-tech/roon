@@ -247,10 +247,10 @@ if [[ $overwrite == "y" || $overwrite == "Y" ]]; then
 
 	# dev3 address 0x498B5AeC5D439b733dC2F58AB489783A23FB26dA | cosmos1fx944mzagwdhx0wz7k9tfztc8g3lkfk6rrgv6l
   default_mnemonics=(
-    "abandon ability about above absent absorb abstract absurd abuse access accident account accuse achieve acid acoustic acquire across act action actor actress actual adapt" # dev0
-    "add addict address adjust admit adult advance advice aerobic affair afford afraid again age agent agree ahead aim air airport aisle alarm album alcohol" # dev1
-    "alert alien alley allow almost alone alpha already also alter always amateur amazing among amount amused analyst anchor ancient anger angle angry animal ankle" # dev2
-    "announce annual another answer antenna antique anxiety any apart apology appear apple approve april arch arctic area arena argue arm armed armor army around" # dev3
+    "copper push brief egg scan entry inform record adjust fossil boss egg comic alien upon aspect dry avoid interest fury window hint race symptom" # dev0
+    "maximum display century economy unlock van census kite error heart snow filter midnight usage egg venture cash kick motor survey drastic edge muffin visual" # dev1
+    "will wear settle write dance topic tape sea glory hotel oppose rebel client problem era video gossip glide during yard balance cancel file rose" # dev2
+    "doll midnight silk carpet brush boring pluck office gown inquiry duck chief aim exit gain never tennis crime fragile ship cloud surface exotic patch" # dev3
   )
 
   provided_mnemonics=()
@@ -318,19 +318,6 @@ if [[ $overwrite == "y" || $overwrite == "Y" ]]; then
 
   # fund validator to cover gentx self-delegation and fees (~1000 ROON)
   evmd genesis add-genesis-account "$VAL_KEY" 1001000000000000000000aroon --keyring-backend "$KEYRING" --home "$CHAINDIR"
-
-  # optionally skip dev funds
-  if [[ "$NO_DEV_FUNDS" == true ]]; then
-    echo "Skipping funding default dev accounts"
-  else
-    # Process all dev mnemonics (provided or default)
-    for ((i=0; i<${#dev_mnemonics[@]}; i++)); do
-      keyname="dev${i}"
-      mnemonic="${dev_mnemonics[i]}"
-      echo "$mnemonic" | evmd keys add "$keyname" --recover --keyring-backend "$KEYRING" --algo "$KEYALGO" --home "$CHAINDIR"
-      add_genesis_funds "$keyname"
-    done
-  fi
 
   # optionally fund a specific hex address
   if [[ -n "$FUND_HEX_ADDR" && -n "$FUND_AMOUNT_ROON" ]]; then
