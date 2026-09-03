@@ -17,7 +17,7 @@ TO=$2
 AMOUNT=$3 # e.g. 100000000000000000000 for 100 tokens (18 decimals)
 RPC_URL=${CUSTOM_RPC:-http://127.0.0.1:8545}
 PRIVATE_KEY=${PRIVATE_KEY:?}
-CHAIN_ID=${CHAIN_ID:-262144}
+CHAIN_ID=${CHAIN_ID:-1492}
 
 echo "🔗 RPC URL: $RPC_URL"
 echo "📦 Sending transfer($TO, $AMOUNT) to $CONTRACT"

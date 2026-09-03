@@ -19,8 +19,8 @@ function panic (errMsg) {
 function extractChainIDFromGo(goFilePath) {
   try {
     if (!fs.existsSync(goFilePath)) {
-      logger.warn(`Go config file not found at ${goFilePath}, using default chain ID: 262144`)
-      return 262144
+      logger.warn(`Go config file not found at ${goFilePath}, using default chain ID: 1492`)
+      return 1492
     }
 
     const goFileContent = fs.readFileSync(goFilePath, 'utf8')
@@ -34,11 +34,11 @@ function extractChainIDFromGo(goFilePath) {
       return chainId
     }
 
-    logger.warn('DefaultEVMChainID not found in Go file, using default: 262144')
-    return 262144
+    logger.warn('DefaultEVMChainID not found in Go file, using default: 1492')
+    return 1492
   } catch (error) {
-    logger.warn(`Error reading Go config file: ${error.message}, using default: 262144`)
-    return 262144
+    logger.warn(`Error reading Go config file: ${error.message}, using default: 1492`)
+    return 1492
   }
 }
 
