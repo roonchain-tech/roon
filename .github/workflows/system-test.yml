@@ -35,11 +35,13 @@ jobs:
       - uses: technote-space/get-diff-action@v6.1.2
         with:
           PATTERNS: |
-            .github/workflows/test-system.yml
+            .github/workflows/system-test.yml
             **/**.sol
             **/**.go
             go.mod
             go.sum
+            tests/systemtests/go.mod
+            tests/systemtests/go.sum
             *.toml
       - name: run system tests
         run: |
