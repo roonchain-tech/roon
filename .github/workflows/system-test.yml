@@ -37,6 +37,7 @@ jobs:
         with:
           PATTERNS: |
             .github/workflows/system-test.yml
+            tests/systemtests/Makefile
             **/**.sol
             **/**.go
             go.mod

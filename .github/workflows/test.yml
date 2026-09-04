@@ -30,6 +30,7 @@ jobs:
         with:
           PATTERNS: |
             .github/workflows/test.yml
+            Makefile
             **/**.sol
             **/**.go
             go.mod
@@ -88,6 +89,7 @@ jobs:
         with:
           PATTERNS: |
             .github/workflows/test.yml
+            Makefile
             **/**.sol
             **/**.go
             go.mod
