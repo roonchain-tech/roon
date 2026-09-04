@@ -139,6 +139,11 @@ vulncheck:
 PACKAGES_NOSIMULATION=$(shell go list ./... | grep -v '/simulation')
 PACKAGES_UNIT := $(shell go list ./... | grep -v '/tests/e2e$$' | grep -v '/simulation')
 PACKAGES_EVMD := $(shell cd roon && go list ./... | grep -v '/simulation')
+# Integration suites run in-process cosmos chains; combined with the race
+# detector and full-project coverage instrumentation they exhaust the memory
+# of standard GitHub runners (the runner itself gets SIGTERM'd). They are
+# excluded from the coverage phase and run separately via test-integration.
+PACKAGES_EVMD_COVER := $(shell cd roon && go list ./... | grep -v '/simulation' | grep -v '/tests/integration')
 COVERPKG_EVM  := $(shell go list ./... | grep -v '/tests/e2e$$' | grep -v '/simulation' | paste -sd, -)
 COVERPKG_ALL  := $(COVERPKG_EVM)
 # -p=2 keeps at most two race-enabled test binaries in memory at once;
@@ -168,11 +173,22 @@ test-unit-cover: run-tests
 	@echo "🔍 Running evm (root) coverage..."
 	@go test -race -tags=test $(COMMON_COVER_ARGS) -coverpkg=$(COVERPKG_ALL) -coverprofile=coverage.txt ./...
 	@echo "🔍 Running evmd coverage..."
-	@cd roon && go test -race -tags=test $(COMMON_COVER_ARGS) -coverpkg=$(COVERPKG_ALL) -coverprofile=coverage_evmd.txt ./...
+	@cd roon && go test -race -tags=test $(COMMON_COVER_ARGS) -coverpkg=$(COVERPKG_ALL) -coverprofile=coverage_evmd.txt $(PACKAGES_EVMD_COVER)
 	@echo "🔀 Merging evmd coverage into root coverage..."
 	@tail -n +2 roon/coverage_evmd.txt >> coverage.txt && rm roon/coverage_evmd.txt
 	@echo "🧹 Filtering ignored files from coverage.txt..."
 	@grep -v -E '/cmd/|/client/|/proto/|/testutil/|/mocks/|/test_.*\.go:|\.pb\.go:|\.pb\.gw\.go:|/x/[^/]+/module\.go:|/scripts/|/ibc/testing/|/version/|\.md:|\.pulsar\.go:' coverage.txt > tmp_coverage.txt && mv tmp_coverage.txt coverage.txt
+
+# Race detector roughly doubles memory of the in-process chain suites
+# (the top-level suite alone reaches >11GB with -race), which does not fit
+# standard 16GB CI runners. CI runs without it; use `make test-integration
+# RACE=1` locally on machines with >=64GB RAM.
+ifeq ($(RACE),1)
+INTEGRATION_RACE_FLAG := -race
+endif
+
+test-integration: ## Run the heavy in-process chain suites without coverage instrumentation
+	@cd roon && go test -count=1 $(INTEGRATION_RACE_FLAG) -tags=test -mod=readonly -p=1 -timeout=60m ./tests/integration/...
 
 test: test-unit
 

@@ -53,6 +53,35 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+  test-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.x"
+          check-latest: true
+      - uses: actions/checkout@v4
+      - uses: technote-space/get-diff-action@v6.1.2
+        with:
+          PATTERNS: |
+            .github/workflows/test.yml
+            Makefile
+            **/**.sol
+            **/**.go
+            go.mod
+            go.sum
+            roon/go.mod
+            roon/go.sum
+            roon/**/**.go
+            *.toml
+      - name: Run integration suites
+        # Heavy in-process chain suites; kept out of test-unit-cover because
+        # race + full coverage instrumentation SIGTERMs standard runners.
+        run: |
+          make test-integration
+        if: env.GIT_DIFF
+
   test-scripts:
     runs-on: ubuntu-latest
     steps:
