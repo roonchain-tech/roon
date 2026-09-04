@@ -51,7 +51,7 @@ func (suite *LedgerTestSuite) SetupTest() {
 	// We use the testutil network to load the encoding config
 	network.New(suite.create, suite.options...)
 
-	suite.hrp = "cosmos"
+	suite.hrp = "roon"
 
 	suite.txAmino = suite.getMockTxAmino()
 	suite.txProtobuf = suite.getMockTxProtobuf()
@@ -88,8 +88,8 @@ func (suite *LedgerTestSuite) getMockTxAmino() []byte {
 				"type":"cosmos-sdk/MsgSend",
 				"value":{
 					"amount":[{"amount":"150","denom":"atom"}],
-					"from_address":"cosmos10jmp6sgh4cc6zt3e8gw05wavvejgr5pwsjskvv",
-					"to_address":"cosmos1fx944mzagwdhx0wz7k9tfztc8g3lkfk6rrgv6l"
+					"from_address":"roon10jmp6sgh4cc6zt3e8gw05wavvejgr5pw6cfmep",
+					"to_address":"roon1fx944mzagwdhx0wz7k9tfztc8g3lkfk6tgq046"
 				}
 			}],
 			"sequence":"6"
@@ -105,8 +105,8 @@ func (suite *LedgerTestSuite) getMockTxProtobuf() []byte {
 
 	memo := "memo"
 	msg := banktypes.NewMsgSend(
-		sdk.MustAccAddressFromBech32("cosmos1r5sckdd808qvg7p8d0auaw896zcluqfd7djffp"),
-		sdk.MustAccAddressFromBech32("cosmos10t8ca2w09ykd6ph0agdz5stvgau47whhaggl9a"),
+		sdk.MustAccAddressFromBech32("roon1r5sckdd808qvg7p8d0auaw896zcluqfd58tyuv"),
+		sdk.MustAccAddressFromBech32("roon10t8ca2w09ykd6ph0agdz5stvgau47whhhz3jss"),
 		[]sdk.Coin{
 			{
 				Denom:  "atom",

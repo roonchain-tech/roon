@@ -1,16 +1,22 @@
 const { expect } = require('chai');
 const hre = require('hardhat');
+const { getValidatorHexAddresses, hexToBech32Addr } = require('../common');
 
 describe('Distribution – validator query methods', function () {
     const DIST_ADDRESS = '0x0000000000000000000000000000000000000801';
-    const VAL_OPER_BECH32 = 'cosmosvaloper1cml96vmptgw99syqrrz8az79xer2pcgpqqyk2g';
-    const VAL_BECH32 = 'cosmos1cml96vmptgw99syqrrz8az79xer2pcgp95srxm'
 
     let distribution, signer;
+    let VAL_OPER_BECH32, VAL_BECH32;
 
     before(async () => {
         [signer] = await hre.ethers.getSigners();
         distribution = await hre.ethers.getContractAt('DistributionI', DIST_ADDRESS);
+        // Resolve the signer's validator at runtime (created in
+        // 1_create_and_edit_validator.js); the genesis validator key is random.
+        const valHexAddrs = await getValidatorHexAddresses(hre);
+        const signerValHex = valHexAddrs.find(a => a.toLowerCase() === signer.address.toLowerCase()) || valHexAddrs[0];
+        VAL_OPER_BECH32 = await hexToBech32Addr(hre, signerValHex, 'roonvaloper');
+        VAL_BECH32 = await hexToBech32Addr(hre, signerValHex, 'roon');
     });
 
     it('validatorDistributionInfo returns current distribution info', async function () {

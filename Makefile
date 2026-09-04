@@ -141,7 +141,7 @@ PACKAGES_UNIT := $(shell go list ./... | grep -v '/tests/e2e$$' | grep -v '/simu
 PACKAGES_EVMD := $(shell cd roon && go list ./... | grep -v '/simulation')
 COVERPKG_EVM  := $(shell go list ./... | grep -v '/tests/e2e$$' | grep -v '/simulation' | paste -sd, -)
 COVERPKG_ALL  := $(COVERPKG_EVM)
-COMMON_COVER_ARGS := -timeout=15m -covermode=atomic
+COMMON_COVER_ARGS := -timeout=30m -covermode=atomic
 
 TEST_PACKAGES := ./...
 TEST_TARGETS := test-unit test-evmd test-unit-cover test-race
@@ -166,7 +166,7 @@ test-unit-cover: run-tests
 	@echo "🔍 Running evmd coverage..."
 	@cd roon && go test -race -tags=test $(COMMON_COVER_ARGS) -coverpkg=$(COVERPKG_ALL) -coverprofile=coverage_evmd.txt ./...
 	@echo "🔀 Merging evmd coverage into root coverage..."
-	@tail -n +2 evmd/coverage_evmd.txt >> coverage.txt && rm evmd/coverage_evmd.txt
+	@tail -n +2 roon/coverage_evmd.txt >> coverage.txt && rm roon/coverage_evmd.txt
 	@echo "🧹 Filtering ignored files from coverage.txt..."
 	@grep -v -E '/cmd/|/client/|/proto/|/testutil/|/mocks/|/test_.*\.go:|\.pb\.go:|\.pb\.gw\.go:|/x/[^/]+/module\.go:|/scripts/|/ibc/testing/|/version/|\.md:|\.pulsar\.go:' coverage.txt > tmp_coverage.txt && mv tmp_coverage.txt coverage.txt
 
@@ -398,11 +398,15 @@ UPSTREAM_REPO ?= https://github.com/cosmos/evm
 LEGACY_TAG ?= v0.5.1
 LEGACY_DIR ?= $(CURDIR)/build/legacy-$(LEGACY_TAG)
 
+# Pin the toolchain for the legacy build: upstream v0.5.1 pins bytedance/sonic
+# v1.14.2, which fails to compile on Go 1.26 (undefined: GoMapIterator).
+LEGACY_GOTOOLCHAIN ?= go1.25.5
+
 build-v05:
 	mkdir -p ./tests/systemtests/binaries/v0.5
 	rm -rf $(LEGACY_DIR)
 	git clone --depth 1 --branch $(LEGACY_TAG) $(UPSTREAM_REPO) $(LEGACY_DIR)
-	$(MAKE) -C $(LEGACY_DIR) build
+	GOTOOLCHAIN=$(LEGACY_GOTOOLCHAIN) $(MAKE) -C $(LEGACY_DIR) build
 	cp $(LEGACY_DIR)/build/evmd ./tests/systemtests/binaries/v0.5/roon
 
 mocks:

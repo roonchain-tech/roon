@@ -1,6 +1,6 @@
 const {expect} = require('chai')
 const hre = require('hardhat')
-const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC} = require('../common')
+const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC, getValidatorHexAddresses, hexToBech32Addr} = require('../common')
 
 describe('Staking – delegate with event assertion', function () {
     const STAKING_ADDRESS = '0x0000000000000000000000000000000000000800'
@@ -19,15 +19,18 @@ describe('Staking – delegate with event assertion', function () {
     })
 
     it('should stake native coin and emit Delegate event (using precision-adjusted shares)', async function () {
-        const valBech32 = 'cosmosvaloper10jmp6sgh4cc6zt3e8gw05wavvejgr5pw4xyrql'
+        // Resolve a live validator at runtime (genesis validator key is random).
+        // Delegate to the non-signer (genesis) validator: its position in the
+        // validators list depends on the randomly generated genesis key.
+        const valHexAddrs = await getValidatorHexAddresses(hre)
+        const hexValAddr = valHexAddrs.find(a => a.toLowerCase() !== signer.address.toLowerCase())
+        const valBech32 = await hexToBech32Addr(hre, hexValAddr, 'roonvaloper')
         const stakeAmountBn = hre.ethers.parseEther('0.001')   // BigNumber
         const stakeAmount = BigInt(stakeAmountBn.toString())
 
         // compute the expected shares minted = stakeAmount * 10^18
         const precision = 10n ** 18n
         const stakeShares = stakeAmount * precision
-
-        const hexValAddr = '0x7cB61D4117AE31a12E393a1Cfa3BaC666481D02E'
 
         // Query delegation before staking
         const beforeDelegation = await staking.delegation(signer.address, valBech32)
@@ -50,7 +53,7 @@ describe('Staking – delegate with event assertion', function () {
 
         // verify event args
         expect(delegateEvt.args.delegatorAddress).to.equal(signer.address)
-        expect(delegateEvt.args.validatorAddress).to.equal(hexValAddr)
+        expect(delegateEvt.args.validatorAddress.toLowerCase()).to.equal(hexValAddr.toLowerCase())
         expect(BigInt(delegateEvt.args.amount.toString())).to.equal(stakeAmount)
 
         // ensure newShares ≥ initialShares + stakeShares

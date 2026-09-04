@@ -77,7 +77,7 @@ func (s *BalanceHandlerTestSuite) TestRecursivePrecompileCallsWithDebugPrecompil
 	s.Require().NoError(err)
 
 	// Fund Contract
-	err = evmApp.GetBankKeeper().SendCoins(ctx, s.chain.SenderAccounts[0].SenderAccount.GetAddress(), callerAddr.Bytes(), types.NewCoins(types.NewCoin("aatom", sdkmath.NewInt(10000000))))
+	err = evmApp.GetBankKeeper().SendCoins(ctx, s.chain.SenderAccounts[0].SenderAccount.GetAddress(), callerAddr.Bytes(), types.NewCoins(types.NewCoin("aroon", sdkmath.NewInt(10000000))))
 	s.Require().NoError(err)
 
 	res, _, _, err := s.chain.SendEvmTx(

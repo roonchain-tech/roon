@@ -135,6 +135,11 @@ describe('StakingI – createValidator', function() {
         const out = await staking.validators('', pageReq)
         const validators = out.validators.map(parseValidator)
         expect(validators.length).to.be.gte(2)
-        expect(validators[1].operatorAddress.toLowerCase()).to.equal(signer.address.toLowerCase())
+        // The validators query sorts by operator address, so the position of
+        // the signer's validator depends on the random genesis validator key.
+        // Assert membership instead of relying on a fixed index.
+        expect(
+            validators.map(v => v.operatorAddress.toLowerCase())
+        ).to.include(signer.address.toLowerCase())
     })
 })

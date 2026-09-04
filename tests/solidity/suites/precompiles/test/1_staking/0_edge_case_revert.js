@@ -3,7 +3,8 @@ const hre = require('hardhat');
 const {
     STAKING_PRECOMPILE_ADDRESS,
     LARGE_GAS_LIMIT,
-    waitWithTimeout, RETRY_DELAY_FUNC
+    waitWithTimeout, RETRY_DELAY_FUNC,
+    getValidatorHexAddresses, hexToBech32Addr
 } = require('../common');
 
 describe('Staking – edge case revert test', function () {
@@ -26,7 +27,10 @@ describe('Staking – edge case revert test', function () {
         });
         await waitWithTimeout(stakingReverter.deploymentTransaction(), 20000, RETRY_DELAY_FUNC)
 
-        validatorAddress = 'cosmosvaloper10jmp6sgh4cc6zt3e8gw05wavvejgr5pw4xyrql';
+        // Resolve a live validator at runtime: the local node's genesis
+        // validator comes from a random key, so the address cannot be hardcoded.
+        const valHexAddrs = await getValidatorHexAddresses(hre);
+        validatorAddress = await hexToBech32Addr(hre, valHexAddrs[0], 'roonvaloper');
         
         console.log('StakingReverter deployed at:', await stakingReverter.getAddress());
         console.log('Using validator address:', validatorAddress);

@@ -1,6 +1,6 @@
 const {expect} = require('chai')
 const hre = require('hardhat')
-const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC} = require('../common')
+const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC, getValidatorHexAddresses, hexToBech32Addr} = require('../common')
 
 // Cosmos SDK LegacyDec precision (18 decimal places)
 const PRECISION = 10n ** 18n
@@ -70,13 +70,19 @@ describe('Staking – redelegate with event and state assertions', function () {
     })
 
     it('should redelegate tokens and emit Redelegate event', async function () {
-        const signerBech32 = 'cosmos1cml96vmptgw99syqrrz8az79xer2pcgp95srxm'
-        const srcValBech32 = 'cosmosvaloper10jmp6sgh4cc6zt3e8gw05wavvejgr5pw4xyrql'
-        const dstValBech32 = 'cosmosvaloper1cml96vmptgw99syqrrz8az79xer2pcgpqqyk2g'
-
-        // decode bech32 → hex for event comparisons
-        const srcValHex = '0x7cB61D4117AE31a12E393a1Cfa3BaC666481D02E'
-        const dstValHex = '0xC6Fe5D33615a1C52c08018c47E8Bc53646A0E101'
+        // Resolve live validators at runtime (genesis validator key is random).
+        // src: the genesis validator delegated to in 2_delegate.js and
+        //      3_undelegate_and_cancel.js (holds 0.002 to redelegate);
+        // dst: the signer's own validator created in 1_create_and_edit_validator,
+        //      so the self-delegation stays intact for the distribution tests.
+        const valHexAddrs = await getValidatorHexAddresses(hre)
+        const signerValHex = valHexAddrs.find(a => a.toLowerCase() === signer.address.toLowerCase())
+        const otherValHex = valHexAddrs.find(a => a.toLowerCase() !== signer.address.toLowerCase())
+        const srcValHex = otherValHex
+        const dstValHex = signerValHex
+        const srcValBech32 = await hexToBech32Addr(hre, srcValHex, 'roonvaloper')
+        const dstValBech32 = await hexToBech32Addr(hre, dstValHex, 'roonvaloper')
+        const signerBech32 = await hexToBech32Addr(hre, signer.address, 'roon')
 
         // 1) query current delegations to both validators before redelegation
         const beforeSrcDelegationRaw = await staking.delegation(signer.address, srcValBech32)
@@ -106,8 +112,8 @@ describe('Staking – redelegate with event and state assertions', function () {
         const redelegateEvt = findEvent(receipt.logs, staking.interface, 'Redelegate')
         expect(redelegateEvt, 'Redelegate event should be emitted').to.exist
         expect(redelegateEvt.args.delegatorAddress).to.equal(signer.address)
-        expect(redelegateEvt.args.validatorSrcAddress).to.equal(srcValHex)
-        expect(redelegateEvt.args.validatorDstAddress).to.equal(dstValHex)
+        expect(redelegateEvt.args.validatorSrcAddress.toLowerCase()).to.equal(srcValHex.toLowerCase())
+        expect(redelegateEvt.args.validatorDstAddress.toLowerCase()).to.equal(dstValHex.toLowerCase())
         expect(redelegateEvt.args.amount).to.equal(amount)
         const completionTime = BigInt(redelegateEvt.args.completionTime.toString())
         expect(completionTime > 0n, 'completionTime should be positive').to.be.true

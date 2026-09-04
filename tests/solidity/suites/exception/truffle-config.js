@@ -6,7 +6,7 @@ module.exports = {
       port: 8545, // Standard Ethereum port (default: none)
       network_id: '*', // Any network (default: none)
       gas: 5000000, // Gas sent with each transaction
-      gasPrice: 1000000000 // 1 gwei (in wei)
+      gasPrice: 50000000000 // 50 gwei (in wei), matches the node minimum gas price
     }
   },
   compilers: {

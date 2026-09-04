@@ -14,6 +14,7 @@ import (
 	srvflags "github.com/cosmos/evm/server/flags"
 	"github.com/cosmos/evm/testutil/constants"
 	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
+	evmtypes "github.com/cosmos/evm/x/vm/types"
 
 	"cosmossdk.io/log"
 
@@ -70,11 +71,15 @@ func SetupEvmd() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	fmGen := feemarkettypes.DefaultGenesisState()
 	fmGen.Params.NoBaseFee = true
 	genesisState[feemarkettypes.ModuleName] = app.AppCodec().MustMarshalJSON(fmGen)
+	// The ibc test chains fund the sender accounts with the EVM extended denom
+	// (see testutil/ibc/chain.go), so the staking bond denom and mint denom must
+	// match it, otherwise token sends and delegations using the bond denom fail
+	// with insufficient funds.
 	stakingGen := stakingtypes.DefaultGenesisState()
-	stakingGen.Params.BondDenom = constants.ExampleAttoDenom
+	stakingGen.Params.BondDenom = evmtypes.DefaultEVMExtendedDenom
 	genesisState[stakingtypes.ModuleName] = app.AppCodec().MustMarshalJSON(stakingGen)
 	mintGen := minttypes.DefaultGenesisState()
-	mintGen.Params.MintDenom = constants.ExampleAttoDenom
+	mintGen.Params.MintDenom = evmtypes.DefaultEVMExtendedDenom
 	genesisState[minttypes.ModuleName] = app.AppCodec().MustMarshalJSON(mintGen)
 
 	return app, genesisState

@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const hre = require('hardhat');
-const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC} = require('../common');
+const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC, getValidatorHexAddresses, hexToBech32Addr} = require('../common');
 
 describe('Distribution – withdraw delegator reward', function () {
     const STAKING_ADDRESS = '0x0000000000000000000000000000000000000800'
@@ -17,8 +17,12 @@ describe('Distribution – withdraw delegator reward', function () {
     });
 
     it('should withdraw rewards and emit WithdrawDelegatorReward event', async function () {
-        const valBech32 = 'cosmosvaloper10jmp6sgh4cc6zt3e8gw05wavvejgr5pw4xyrql';
-        const valHex = '0x7cB61D4117AE31a12E393a1Cfa3BaC666481D02E';
+        // Resolve a live validator at runtime (genesis validator key is random).
+        // Use the non-signer (genesis) validator, matching the staking suite
+        // flow; its position in the list depends on the random genesis key.
+        const valHexAddrs = await getValidatorHexAddresses(hre);
+        const valHex = valHexAddrs.find(a => a.toLowerCase() !== signer.address.toLowerCase());
+        const valBech32 = await hexToBech32Addr(hre, valHex, 'roonvaloper');
         const stakeAmountBn = hre.ethers.parseEther('0.001')   // BigNumber
         const stakeAmount = BigInt(stakeAmountBn.toString())
         // This address is a current withdraw address for the signer. Check 1_set_withdraw_address.js test for more details.
@@ -57,7 +61,7 @@ describe('Distribution – withdraw delegator reward', function () {
         const evt = findEvent(receipt.logs, distribution.interface, 'WithdrawDelegatorReward');
         expect(evt, 'WithdrawDelegatorReward event must be emitted').to.exist;
         expect(evt.args.delegatorAddress).to.equal(signer.address);
-        expect(evt.args.validatorAddress).to.equal(valHex);
+        expect(evt.args.validatorAddress.toLowerCase()).to.equal(valHex.toLowerCase());
         expect(evt.args.amount).to.be.a('bigint');
         expect(evt.args.amount).to.be.greaterThan(currentReward.amount, 'Withdrawn amount should be greater than zero');
         console.log('finished event checks')

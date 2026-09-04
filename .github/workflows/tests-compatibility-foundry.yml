@@ -5,18 +5,20 @@ on:
     branches: [main, develop]
     paths:
       - 'tests/evm-tools-compatibility/foundry/**'
-      - '../../scripts/tests_compatibility_setup.sh'
-      - '../../scripts/tests_compatibility_foundry.sh'
+      - 'scripts/tests_compatibility_setup.sh'
+      - 'scripts/tests_compatibility_foundry.sh'
       - 'local_node.sh'
-      - 'tests-compatibility-foundry.yml'
+      - 'x/vm/**'
+      - '.github/workflows/tests-compatibility-foundry.yml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'tests/evm-tools-compatibility/foundry/**'
-      - '../../scripts/tests_compatibility_setup.sh'
-      - '../../scripts/tests_compatibility_foundry.sh'
+      - 'scripts/tests_compatibility_setup.sh'
+      - 'scripts/tests_compatibility_foundry.sh'
       - 'local_node.sh'
-      - 'tests-compatibility-foundry.yml'
+      - 'x/vm/**'
+      - '.github/workflows/tests-compatibility-foundry.yml'
 
 permissions:
   contents: read

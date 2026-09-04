@@ -5,8 +5,8 @@ const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC} = require('../common')
 describe('Gov Precompile', function () {
     const GOV_ADDRESS = '0x0000000000000000000000000000000000000805'
     const GAS_LIMIT = 1_000_000
-    const COSMOS_ADDR = 'cosmos1cml96vmptgw99syqrrz8az79xer2pcgp95srxm'
-    const GOV_MODULE_ADDR = 'cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn'
+    const COSMOS_ADDR = 'roon1cml96vmptgw99syqrrz8az79xer2pcgp07fwnk'
+    const GOV_MODULE_ADDR = 'roon10d07y265gmmuvt4z0w9aw880jnsr700jsg2gr7'
 
     let gov, signer, globalProposalId
 
@@ -16,7 +16,7 @@ describe('Gov Precompile', function () {
         
         // Create a single proposal to be reused across tests
         const jsonProposal = buildProposal(COSMOS_ADDR)
-        const deposit = { denom: 'atest', amount: hre.ethers.parseEther('1') }
+        const deposit = { denom: 'aroon', amount: hre.ethers.parseEther('1') }
 
         const tx = await gov
             .connect(signer)
@@ -39,7 +39,7 @@ describe('Gov Precompile', function () {
             '@type': '/cosmos.bank.v1beta1.MsgSend',
             from_address: GOV_MODULE_ADDR,
             to_address: toCosmos,
-            amount: [{ denom: 'atest', amount: '1' }],
+            amount: [{ denom: 'aroon', amount: '1' }],
         }
 
         const prop = {
@@ -64,7 +64,7 @@ describe('Gov Precompile', function () {
 
     it('deposits on the global proposal', async function () {
         const amt = hre.ethers.parseEther('0.5')
-        const deposit = { denom: 'atest', amount: amt }
+        const deposit = { denom: 'aroon', amount: amt }
 
         // Check balances before deposit
         const signerBalanceBefore = await hre.ethers.provider.getBalance(signer.address)
@@ -153,7 +153,7 @@ describe('Gov Precompile', function () {
         expect(depositResult.proposalId).to.equal(globalProposalId)
         expect(depositResult.depositor).to.equal(signer.address)
         expect(depositResult.amount.length).to.be.greaterThan(0)
-        expect(depositResult.amount[0].denom).to.equal('atest')
+        expect(depositResult.amount[0].denom).to.equal('aroon')
     })
 
     it('queries all deposits for the global proposal', async function () {

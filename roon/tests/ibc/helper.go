@@ -18,10 +18,25 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
+
+// The counterparty Cosmos chains in these IBC tests are built with the ibc-go
+// simapp, whose keepers hardcode the default SDK bech32 prefixes ("cosmos").
+// The chain test helpers set a custom prefix ("roon") globally, which makes
+// module authority addresses fail the simapp codec validation and breaks tx
+// signing on the counterparty chains. The whole test binary must therefore run
+// with the default SDK prefixes, matching upstream where the chain prefix is
+// "cosmos".
+func init() {
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount(sdk.Bech32MainPrefix, sdk.Bech32MainPrefix+sdk.PrefixPublic)
+	cfg.SetBech32PrefixForValidator(sdk.Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator, sdk.Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
+	cfg.SetBech32PrefixForConsensusNode(sdk.Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus, sdk.Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic)
+}
 
 // NativeErc20Info holds details about a deployed ERC20 token.
 type NativeErc20Info struct {

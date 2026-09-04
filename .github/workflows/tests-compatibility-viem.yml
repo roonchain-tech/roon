@@ -5,18 +5,20 @@ on:
     branches: [main, develop]
     paths:
       - 'tests/evm-tools-compatibility/viem/**'
-      - '../../scripts/tests_compatibility_setup.sh'
-      - '../../scripts/tests_compatibility_viem.sh'
+      - 'scripts/tests_compatibility_setup.sh'
+      - 'scripts/tests_compatibility_viem.sh'
       - 'local_node.sh'
-      - 'tests-compatibility-viem.yml'
+      - 'x/vm/**'
+      - '.github/workflows/tests-compatibility-viem.yml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'tests/evm-tools-compatibility/viem/**'
-      - '../../scripts/tests_compatibility_setup.sh'
-      - '../../scripts/tests_compatibility_viem.sh'
+      - 'scripts/tests_compatibility_setup.sh'
+      - 'scripts/tests_compatibility_viem.sh'
       - 'local_node.sh'
-      - 'tests-compatibility-viem.yml'
+      - 'x/vm/**'
+      - '.github/workflows/tests-compatibility-viem.yml'
 
 permissions:
   contents: read

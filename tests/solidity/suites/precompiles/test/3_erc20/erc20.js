@@ -16,12 +16,12 @@ describe('ERC20 Precompile', function () {
 
     it('should return the name', async function () {
         const name = await erc20.name()
-        expect(name).to.contain('Test Token')
+        expect(name).to.contain('Roon Token')
     })
 
     it('should return the symbol', async function () {
         const symbol = await erc20.symbol()
-        expect(symbol).to.contain('TEST')
+        expect(symbol).to.contain('ROON')
     })
 
     it('should return the decimals', async function () {

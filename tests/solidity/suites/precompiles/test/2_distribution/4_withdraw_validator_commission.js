@@ -1,6 +1,7 @@
 const { expect } = require('chai')
-const { ethers } = require('hardhat')
-const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC} = require('../common')
+const hre = require('hardhat')
+const { ethers } = hre
+const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC, getValidatorHexAddresses, hexToBech32Addr} = require('../common')
 
 describe('Distribution – withdraw validator commission', function () {
     const DIST_ADDRESS = '0x0000000000000000000000000000000000000801'
@@ -10,12 +11,19 @@ describe('Distribution – withdraw validator commission', function () {
 
     before(async () => {
         const signers   = await ethers.getSigners()
-        validator       = signers[signers.length - 1]
+        // Commission withdrawal must be signed by the validator operator.
+        // The signer (accounts[0]) is the operator of the validator created
+        // in 1_create_and_edit_validator.js, which accrues commission from
+        // its self-delegation.
+        validator       = signers[0]
         distribution    = await ethers.getContractAt('DistributionI', DIST_ADDRESS)
     })
 
     it('withdraws validator commission and emits proper event', async function () {
-        const valBech32     = 'cosmosvaloper10jmp6sgh4cc6zt3e8gw05wavvejgr5pw4xyrql'
+        // Resolve the signer's validator at runtime (created in 1_create_and_edit_validator.js)
+        const valHexAddrs = await getValidatorHexAddresses(hre)
+        const valHex = valHexAddrs.find(a => a.toLowerCase() === validator.address.toLowerCase())
+        const valBech32 = await hexToBech32Addr(hre, valHex, 'roonvaloper')
 
         // 1) query commission before withdrawal
         const beforeRes = await distribution.validatorCommission(valBech32)

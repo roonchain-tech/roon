@@ -5,18 +5,20 @@ on:
     branches: [main, develop]
     paths:
       - 'tests/evm-tools-compatibility/web3.js/**'
-      - '../../scripts/tests_compatibility_setup.sh'
-      - '../../scripts/tests_compatibility_web3js.sh'
+      - 'scripts/tests_compatibility_setup.sh'
+      - 'scripts/tests_compatibility_web3js.sh'
       - 'local_node.sh'
-      - 'tests-compatibility-web3js.yml'
+      - 'x/vm/**'
+      - '.github/workflows/tests-compatibility-web3js.yml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'tests/evm-tools-compatibility/web3.js/**'
-      - '../../scripts/tests_compatibility_setup.sh'
-      - '../../scripts/tests_compatibility_web3js.sh'
+      - 'scripts/tests_compatibility_setup.sh'
+      - 'scripts/tests_compatibility_web3js.sh'
       - 'local_node.sh'
-      - 'tests-compatibility-web3js.yml'
+      - 'x/vm/**'
+      - '.github/workflows/tests-compatibility-web3js.yml'
 
 permissions:
   contents: read

@@ -105,7 +105,7 @@ func (s *KeeperTestSuite) TestOnRecvPacketRegistered() {
 		{
 			name: "success - invalid sender (no '1')",
 			malleate: func() {
-				transfer := transfertypes.NewFungibleTokenPacketData(registeredDenom, "100", "evmos", ethsecpAddrCosmos, "")
+				transfer := transfertypes.NewFungibleTokenPacketData(registeredDenom, "100", "evmos", ethsecpAddrEvmos, "")
 				bz := transfertypes.ModuleCdc.MustMarshalJSON(&transfer)
 				packet = channeltypes.NewPacket(bz, 100, transfertypes.PortID, sourceChannel, transfertypes.PortID, cosmosEVMChannel, timeoutHeight, 0)
 			},
@@ -118,7 +118,7 @@ func (s *KeeperTestSuite) TestOnRecvPacketRegistered() {
 		{
 			name: "success - invalid sender (bad address)",
 			malleate: func() {
-				transfer := transfertypes.NewFungibleTokenPacketData(registeredDenom, "100", "badba1sv9m0g7ycejwr3s369km58h5qe7xj77hvcxrms", ethsecpAddrCosmos, "")
+				transfer := transfertypes.NewFungibleTokenPacketData(registeredDenom, "100", "badba1sv9m0g7ycejwr3s369km58h5qe7xj77hvcxrms", ethsecpAddrEvmos, "")
 				bz := transfertypes.ModuleCdc.MustMarshalJSON(&transfer)
 				packet = channeltypes.NewPacket(bz, 100, transfertypes.PortID, sourceChannel, transfertypes.PortID, cosmosEVMChannel, timeoutHeight, 0)
 			},
@@ -359,7 +359,11 @@ func (s *KeeperTestSuite) TestOnRecvPacketRegistered() {
 
 func (s *KeeperTestSuite) TestConvertCoinToERC20FromPacket() {
 	var ctx sdk.Context
-	senderAddr := "cosmos1x2w87cvt5mqjncav4lxy8yfreynn273x34qlwy"
+	// Re-encode the upstream sender address (which uses the default SDK prefix)
+	// with the chain's bech32 prefix so it passes the app's address codec validation.
+	senderBz, err := sdk.GetFromBech32("cosmos1x2w87cvt5mqjncav4lxy8yfreynn273x34qlwy", sdk.Bech32MainPrefix)
+	s.Require().NoError(err)
+	senderAddr := sdk.MustBech32ifyAddressBytes(sdk.GetConfig().GetBech32AccountAddrPrefix(), senderBz)
 
 	baseDenom, err := sdk.GetBaseDenom()
 	s.Require().NoError(err)

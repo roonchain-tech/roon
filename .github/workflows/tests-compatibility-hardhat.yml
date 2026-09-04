@@ -5,18 +5,20 @@ on:
     branches: [main, develop]
     paths:
       - 'tests/evm-tools-compatibility/hardhat/**'
-      - '../../scripts/tests_compatibility_setup.sh'
-      - '../../scripts/tests_compatibility_hardhat.sh'
+      - 'scripts/tests_compatibility_setup.sh'
+      - 'scripts/tests_compatibility_hardhat.sh'
       - 'local_node.sh'
-      - 'tests-compatibility-hardhat.yml'
+      - 'x/vm/**'
+      - '.github/workflows/tests-compatibility-hardhat.yml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'tests/evm-tools-compatibility/hardhat/**'
-      - '../../scripts/tests_compatibility_setup.sh'
-      - '../../scripts/tests_compatibility_hardhat.sh'
+      - 'scripts/tests_compatibility_setup.sh'
+      - 'scripts/tests_compatibility_hardhat.sh'
       - 'local_node.sh'
-      - 'tests-compatibility-hardhat.yml'
+      - 'x/vm/**'
+      - '.github/workflows/tests-compatibility-hardhat.yml'
 
 permissions:
   contents: read

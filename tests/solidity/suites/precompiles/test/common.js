@@ -80,6 +80,23 @@ function findEvent(logs, iface, eventName) {
     return null
 }
 
+
+// Query on-chain validators and return their hex operator addresses.
+// The local node creates the genesis validator from a random key, so tests
+// must resolve validator addresses at runtime instead of hardcoding them.
+async function getValidatorHexAddresses(hre) {
+    const staking = await hre.ethers.getContractAt('StakingI', STAKING_PRECOMPILE_ADDRESS)
+    const pageReq = { key: '0x', offset: 0, limit: 100, countTotal: false, reverse: false }
+    const out = await staking.validators('', pageReq)
+    return out.validators.map(v => v.operatorAddress)
+}
+
+// Convert a hex address to a bech32 address through the Bech32 precompile.
+async function hexToBech32Addr(hre, hexAddr, prefix) {
+    const bech32 = await hre.ethers.getContractAt('Bech32I', BECH32_PRECOMPILE_ADDRESS)
+    return await bech32.hexToBech32.staticCall(hexAddr, prefix)
+}
+
 module.exports = {
     STAKING_PRECOMPILE_ADDRESS,
     BECH32_PRECOMPILE_ADDRESS,
@@ -94,5 +111,7 @@ module.exports = {
     RETRY_DELAY_FUNC,
     parseValidator,
     findEvent,
+    getValidatorHexAddresses,
+    hexToBech32Addr,
     waitWithTimeout
 }
