@@ -143,7 +143,9 @@ COVERPKG_EVM  := $(shell go list ./... | grep -v '/tests/e2e$$' | grep -v '/simu
 COVERPKG_ALL  := $(COVERPKG_EVM)
 # -p=2 keeps at most two race-enabled test binaries in memory at once;
 # the default (-p=GOMAXPROCS) exhausts memory on standard GitHub runners.
-COMMON_COVER_ARGS := -timeout=30m -covermode=atomic -p=2
+# 60m per-package budget: race-enabled integration suites on shared 4-core
+# runners are ~4x slower than local machines and exceeded the old 30m cap.
+COMMON_COVER_ARGS := -timeout=60m -covermode=atomic -p=2
 
 TEST_PACKAGES := ./...
 TEST_TARGETS := test-unit test-evmd test-unit-cover test-race
