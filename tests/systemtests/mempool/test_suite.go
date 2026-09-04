@@ -11,7 +11,10 @@ import (
 	"github.com/cosmos/evm/tests/systemtests/suite"
 )
 
-const txPoolContentTimeout = 120 * time.Second
+// Note: standard GitHub-hosted runners are much slower than the large
+// runners used upstream; waiting for queued txs to be promoted and mined
+// can exceed 120s there, so allow a more generous margin.
+const txPoolContentTimeout = 300 * time.Second
 
 // Suite wraps the shared BaseTestSuite with mempool-specific helpers.
 type TestSuite struct {
