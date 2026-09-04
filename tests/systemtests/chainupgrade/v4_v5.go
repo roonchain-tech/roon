@@ -9,8 +9,8 @@ import (
 
 	systest "cosmossdk.io/systemtests"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/cosmos/evm/tests/systemtests/suite"
 	"github.com/stretchr/testify/require"
 	"github.com/tidwall/gjson"
@@ -48,7 +48,10 @@ func RunChainUpgrade(t *testing.T, base *suite.BaseTestSuite) {
 	sut.StartChain(t, fmt.Sprintf("--halt-height=%d", upgradeHeight+1), "--chain-id=local-4221", "--minimum-gas-prices=0.00atest")
 
 	cli := systest.NewCLIWrapper(t, sut, systest.Verbose)
-	govAddr := sdk.AccAddress(address.Module("gov")).String()
+	// The legacy v0.5 chain is built from upstream cosmos/evm and uses the
+	// "cosmos" bech32 prefix, so the gov authority must be rendered with it.
+	govAddr, err := bech32.ConvertAndEncode("cosmos", address.Module("gov"))
+	require.NoError(t, err)
 	// submit upgrade proposal
 	proposal := fmt.Sprintf(`
 {
