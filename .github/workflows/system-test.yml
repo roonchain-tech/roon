@@ -19,6 +19,7 @@ jobs:
 
   test-system:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
       - uses: actions/setup-go@v5
         with:

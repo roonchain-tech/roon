@@ -141,7 +141,9 @@ PACKAGES_UNIT := $(shell go list ./... | grep -v '/tests/e2e$$' | grep -v '/simu
 PACKAGES_EVMD := $(shell cd roon && go list ./... | grep -v '/simulation')
 COVERPKG_EVM  := $(shell go list ./... | grep -v '/tests/e2e$$' | grep -v '/simulation' | paste -sd, -)
 COVERPKG_ALL  := $(COVERPKG_EVM)
-COMMON_COVER_ARGS := -timeout=30m -covermode=atomic
+# -p=2 keeps at most two race-enabled test binaries in memory at once;
+# the default (-p=GOMAXPROCS) exhausts memory on standard GitHub runners.
+COMMON_COVER_ARGS := -timeout=30m -covermode=atomic -p=2
 
 TEST_PACKAGES := ./...
 TEST_TARGETS := test-unit test-evmd test-unit-cover test-race
@@ -180,9 +182,9 @@ test-all:
 
 run-tests:
 ifneq (,$(shell which tparse 2>/dev/null))
-	go test -count=1 -race -tags=test -mod=readonly -json $(ARGS) $(EXTRA_ARGS) $(TEST_PACKAGES) | tparse
+	go test -count=1 -race -tags=test -mod=readonly -json -p=2 $(ARGS) $(EXTRA_ARGS) $(TEST_PACKAGES) | tparse
 else
-	go test -count=1 -race -tags=test -mod=readonly $(ARGS) $(EXTRA_ARGS) $(TEST_PACKAGES)
+	go test -count=1 -race -tags=test -mod=readonly -p=2 $(ARGS) $(EXTRA_ARGS) $(TEST_PACKAGES)
 endif
 
 # Use the old Apple linker to workaround broken xcode - https://github.com/golang/go/issues/65169
